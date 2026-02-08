@@ -8,7 +8,6 @@ import asyncio
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-from dotenv import load_dotenv
 
 # Import services
 from services.linkedin_scraper import scrape_linkedin_profile
@@ -16,8 +15,10 @@ from services.resume_parser import pdf_to_text_minimal_tokens, parse_resume_with
 from services.linkedin_finder import find_linkedin, find_linkedin_bulk
 from services.verification import run_verification
 
-# Load environment variables
-load_dotenv()
+# # from dotenv import load_dotenv
+# # Only for local
+# # Load environment variables
+# load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)

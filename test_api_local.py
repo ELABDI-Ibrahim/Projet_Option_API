@@ -7,8 +7,12 @@ import requests
 import json
 import os
 
-# Base URL - change this to your Railway URL after deployment
-BASE_URL = os.environ.get('API_URL', 'http://localhost:5000')
+# # Base URL - change this to your Railway URL after deployment
+# BASE_URL = os.environ.get('API_URL', 'http://localhost:5000')
+
+# Base URL - Railway URL deployment
+BASE_URL = os.environ.get('API_URL', 'https://web-production-f19a8.up.railway.app/')
+
 
 def test_health():
     """Test health check endpoint."""

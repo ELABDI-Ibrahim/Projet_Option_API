@@ -3,10 +3,11 @@ from groq import Groq
 import json
 from PyPDF2 import PdfReader
 import re
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Keep those only for local
+# from dotenv import load_dotenv
+# # Load environment variables from .env file
+# load_dotenv()
 
 # --- 1. Improved PDF to Text Conversion Function ---
 def pdf_to_text_minimal_tokens(pdf_path):
