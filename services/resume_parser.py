@@ -60,7 +60,7 @@ def parse_resume_with_groq(resume_text_content):
     """
     Calls the Groq API to parse resume text into a structured JSON format.
     """
-    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
     if not resume_text_content:
         print("Error: No resume text provided.")
