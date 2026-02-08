@@ -9,3 +9,6 @@ fuzzywuzzy
 python-Levenshtein
 playwright
 scikit-learn
+linkedin-scraper
+playwright
+ddgs

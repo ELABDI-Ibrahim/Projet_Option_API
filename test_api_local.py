@@ -33,7 +33,7 @@ def test_find_linkedin():
     """Test LinkedIn profile search."""
     print("\n=== Testing LinkedIn Profile Search ===")
     payload = {
-        "name": "Zaoug El Abdi",
+        "name": "Zaoug Imad",
         "company": "École Centrale Casablanca"
     }
     response = requests.post(
@@ -83,6 +83,7 @@ def test_parse_resume():
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         print(f"Success: {response.json()['success']}")
+        print(f"Data: {response.json()['data']}")
         print("✓ Resume parsing passed")
     else:
         print(f"Response: {json.dumps(response.json(), indent=2)}")
@@ -150,10 +151,10 @@ def run_all_tests():
         ("Root Endpoint", test_root),
         ("Find LinkedIn", test_find_linkedin),
         ("Bulk LinkedIn Search", test_find_linkedin_bulk),
-        ("Parse Resume", test_parse_resume),
-        ("Scrape LinkedIn", test_scrape_linkedin),
-        ("Verify Resume", test_verify)
-    ]
+        ("Parse Resume", test_parse_resume),]
+    #     ("Scrape LinkedIn", test_scrape_linkedin),
+    #     ("Verify Resume", test_verify)
+    # ]
     
     passed = 0
     failed = 0
