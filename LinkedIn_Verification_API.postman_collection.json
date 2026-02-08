@@ -1,0 +1,184 @@
+{
+  "info": {
+    "name": "LinkedIn Resume Verification API",
+    "description": "API for scraping LinkedIn profiles, parsing resumes, and verification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API is running"
+      }
+    },
+    {
+      "name": "Get API Info",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": [""]
+        },
+        "description": "Get API documentation and available endpoints"
+      }
+    },
+    {
+      "name": "Parse Resume",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "",
+              "description": "PDF file to parse"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/parse-resume",
+          "host": ["{{base_url}}"],
+          "path": ["api", "parse-resume"]
+        },
+        "description": "Parse a PDF resume into structured JSON"
+      }
+    },
+    {
+      "name": "Find LinkedIn Profile",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"company\": \"Google\",\n  \"location\": \"San Francisco\",\n  \"debug\": false\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/find-linkedin",
+          "host": ["{{base_url}}"],
+          "path": ["api", "find-linkedin"]
+        },
+        "description": "Find LinkedIn profile using DuckDuckGo search"
+      }
+    },
+    {
+      "name": "Find LinkedIn Bulk",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"people\": [\n    {\n      \"name\": \"John Doe\",\n      \"company\": \"Google\"\n    },\n    {\n      \"name\": \"Jane Smith\",\n      \"company\": \"Microsoft\"\n    }\n  ],\n  \"delay\": 2\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/find-linkedin-bulk",
+          "host": ["{{base_url}}"],
+          "path": ["api", "find-linkedin-bulk"]
+        },
+        "description": "Find multiple LinkedIn profiles at once"
+      }
+    },
+    {
+      "name": "Scrape LinkedIn Profile",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"profile_url\": \"https://www.linkedin.com/in/satyanadella/\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/scrape-linkedin",
+          "host": ["{{base_url}}"],
+          "path": ["api", "scrape-linkedin"]
+        },
+        "description": "Scrape a LinkedIn profile (requires session.json)"
+      }
+    },
+    {
+      "name": "Verify Resume (with File)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "",
+              "description": "PDF resume file"
+            },
+            {
+              "key": "linkedin_url",
+              "value": "https://www.linkedin.com/in/satyanadella/",
+              "type": "text",
+              "description": "LinkedIn profile URL"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/api/verify",
+          "host": ["{{base_url}}"],
+          "path": ["api", "verify"]
+        },
+        "description": "Verify resume against LinkedIn profile (upload file + URL)"
+      }
+    },
+    {
+      "name": "Verify Resume (with JSON)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resume_data\": {\n    \"name\": \"John Doe\",\n    \"linkedin_url\": \"https://www.linkedin.com/in/johndoe\",\n    \"location\": \"San Francisco\",\n    \"about\": null,\n    \"open_to_work\": false,\n    \"experiences\": [\n      {\n        \"position_title\": \"Software Engineer\",\n        \"institution_name\": \"Google\",\n        \"linkedin_url\": \"https://www.linkedin.com/company/google\",\n        \"from_date\": \"Jan 2020\",\n        \"to_date\": \"Present\",\n        \"duration\": \"4 years\",\n        \"location\": \"Mountain View, CA\",\n        \"description\": \"Working on search infrastructure\"\n      }\n    ],\n    \"educations\": [],\n    \"interests\": [],\n    \"accomplishments\": [],\n    \"contacts\": []\n  },\n  \"linkedin_data\": {\n    \"name\": \"John Doe\",\n    \"experiences\": [\n      {\n        \"position_title\": \"Software Engineer\",\n        \"institution_name\": \"Google\",\n        \"from_date\": \"Jan 2020\",\n        \"to_date\": \"Present\",\n        \"description\": \"Working on search infrastructure\"\n      }\n    ],\n    \"educations\": []\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/verify",
+          "host": ["{{base_url}}"],
+          "path": ["api", "verify"]
+        },
+        "description": "Verify resume against LinkedIn profile (pre-parsed JSON data)"
+      }
+    }
+  ]
+}

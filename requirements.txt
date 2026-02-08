@@ -1,0 +1,11 @@
+Flask
+flask-cors
+gunicorn
+python-dotenv
+groq
+PyPDF2
+duckduckgo-search
+fuzzywuzzy
+python-Levenshtein
+playwright
+scikit-learn
