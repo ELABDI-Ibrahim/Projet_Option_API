@@ -21,10 +21,6 @@ source venv/bin/activate
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
-# Download spaCy model
-echo "Downloading spaCy English model..."
-python -m spacy download en_core_web_md
-
 # Install Playwright browsers
 echo "Installing Playwright browsers..."
 playwright install chromium
