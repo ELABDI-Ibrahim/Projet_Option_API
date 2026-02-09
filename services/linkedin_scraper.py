@@ -14,7 +14,7 @@ async def scrape_linkedin_profile(profile_url: str) -> dict:
     Returns:
         Dictionary with profile data
     """
-    async with BrowserManager(headless=True, slow_mo=1000) as browser:
+    async with BrowserManager(headless=True, slow_mo=1000, args=["--no-sandbox"]) as browser:
         callback = ConsoleCallback()
         
         # Load authenticated session
