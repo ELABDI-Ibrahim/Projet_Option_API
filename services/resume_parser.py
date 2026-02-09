@@ -53,8 +53,6 @@ def pdf_to_text_minimal_tokens(pdf_path):
 
     return text.strip()
 
-
-
 # --- 2. Groq API Structured Output Call ---
 def parse_resume_with_groq(resume_text_content):
     """

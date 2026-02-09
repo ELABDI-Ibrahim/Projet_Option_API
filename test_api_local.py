@@ -110,7 +110,7 @@ def test_scrape_linkedin():
         json=payload
     )
     print(f"Status: {response.status_code}")
-    print(f"Response preview: {json.dumps(response.json(), indent=2)[:500]}...")
+    print(f"Response preview: {json.dumps(response.json(), indent=2)}...")
     if response.status_code == 200:
         print("✓ LinkedIn scraping passed")
 
@@ -154,9 +154,9 @@ def run_all_tests():
         ("Health Check", test_health),
         ("Root Endpoint", test_root),
         ("Find LinkedIn", test_find_linkedin),
-        ("Bulk LinkedIn Search", test_find_linkedin_bulk),
-        ("Parse Resume", test_parse_resume),]
-    #     ("Scrape LinkedIn", test_scrape_linkedin),
+        # ("Bulk LinkedIn Search", test_find_linkedin_bulk),
+        ("Parse Resume", test_parse_resume),
+        ("Scrape LinkedIn", test_scrape_linkedin),]
     #     ("Verify Resume", test_verify)
     # ]
     
