@@ -76,8 +76,51 @@ def test_scrape_linkedin_local_cache():
             print(f"Response: {response.text}")
             print("✗ Local cache retrieval failed")
 
+        print(data)
+
     except Exception as e:
         print(f"✗ Request failed: {e}")
+
+
+import requests
+import json
+
+def test_find_linkedin(
+    base_url='https://web-production-f19a8.up.railway.app/',
+    name="EL ABDI IBRAHIM",
+    email=None,
+    company=None,
+    location=None,
+    debug=False
+):
+    url = f"{base_url}/api/find-linkedin"
+
+    payload = {
+        "name": name,
+        "debug": debug
+    }
+
+    if email:
+        payload["email"] = email
+    if company:
+        payload["company"] = company
+    if location:
+        payload["location"] = location
+
+    response = requests.post(url, json=payload)
+
+    print("Status Code:", response.status_code)
+
+    try:
+        data = response.json()
+        print("Response JSON:")
+        print(json.dumps(data, indent=2))
+        return data
+    except ValueError:
+        print("Response is not valid JSON:")
+        print(response.text)
+        return None
+
 
 def run_all_tests():
     """Run all tests."""
@@ -91,6 +134,7 @@ def run_all_tests():
     test_health()
     test_root()
     test_scrape_linkedin_local_cache()
+    test_find_linkedin()
     
     print("\n" + "=" * 60)
     print("Test Complete")

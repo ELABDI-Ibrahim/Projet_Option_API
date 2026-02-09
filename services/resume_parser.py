@@ -197,19 +197,20 @@ def parse_resume_with_groq(resume_text_content):
             },
 
             "required": [
-                "linkedin_url",
-                "name",
-                "location",
-                "about",
-                "open_to_work",
-                "experiences",
-                "educations",
-                "skills",
-                "projects",
-                "interests",
-                "accomplishments",
-                "contacts"
-            ],
+            "name",           # Keep required - every resume has a name
+            "location",       # Usually present
+            "experiences",    # Core section
+            "educations",     # Core section
+            "skills",         # Core section
+            "contacts"        # Usually present (at least email/phone)
+            # REMOVE from required:
+            # - "linkedin_url" (not on all resumes)
+            # - "about" (already nullable)
+            # - "open_to_work" (should default to false)
+            # - "projects" (optional section)
+            # - "interests" (optional section)
+            # - "accomplishments" (optional section)
+        ],
 
             "additionalProperties": False
         }
@@ -240,10 +241,11 @@ def parse_resume_with_groq(resume_text_content):
                     "   - Job titles (unless clearly non-technical and commonly translated)\n"
                     "5. Preserve bullet points, punctuation, casing, and wording as faithfully as possible.\n"
                     "6. Descriptions must be verbatim copies of resume sections, not summaries.\n"
-                    "7. If a field is missing, return a default value:\n"
-                    "   - empty string for strings\n"
-                    "   - null for nullable fields\n"
-                    "   - empty array for arrays\n"
+                    "7. If a field is missing or not found in the resume:\n"
+                    "   - For optional fields: omit them entirely OR use appropriate defaults\n"
+                    "   - linkedin_url: empty string if not found\n"
+                    "   - open_to_work: false if not specified\n"
+                    "   - projects/interests/accomplishments: empty array if section not present\n"
                     "8. Output ONLY valid JSON that strictly follows the provided schema.\n"
                     "9. Do NOT add explanations, comments, or extra fields.\n\n"
                     "Your task is STRUCTURAL MAPPING, not interpretation."
