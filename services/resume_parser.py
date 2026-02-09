@@ -67,7 +67,7 @@ def parse_resume_with_groq(resume_text_content):
     # Define the target JSON schema
     json_schema = {
         "name": "resume_extraction_schema",
-        "strict": True,  # Enable strict mode for guaranteed adherence
+        "strict": True,
         "schema": {
             "type": "object",
             "properties": {
@@ -76,6 +76,7 @@ def parse_resume_with_groq(resume_text_content):
                 "location": {"type": "string"},
                 "about": {"type": ["string", "null"]},
                 "open_to_work": {"type": "boolean"},
+
                 "experiences": {
                     "type": "array",
                     "items": {
@@ -90,45 +91,130 @@ def parse_resume_with_groq(resume_text_content):
                             "location": {"type": "string"},
                             "description": {"type": "string"}
                         },
-                        "required": ["position_title", "institution_name", "linkedin_url", "from_date", "to_date", "duration", "location", "description"],
+                        "required": [
+                            "position_title",
+                            "institution_name",
+                            "linkedin_url",
+                            "from_date",
+                            "to_date",
+                            "duration",
+                            "location",
+                            "description"
+                        ],
                         "additionalProperties": False
                     }
                 },
+
                 "educations": {
                     "type": "array",
                     "items": {
-                         "type": "object",
-                         "properties": {
-                             "degree": {"type": "string"},
-                             "institution_name": {"type": "string"},
-                             "linkedin_url": {"type": "string"},
-                             "from_date": {"type": "string"},
-                             "to_date": {"type": "string"},
-                             "duration": {"type": "string"},
-                             "location": {"type": "string"},
-                             "description": {"type": "string"}
-                         },
-                         "required": ["degree", "institution_name", "linkedin_url", "from_date", "to_date", "duration", "location", "description"],
-                         "additionalProperties": False
-                     }
+                        "type": "object",
+                        "properties": {
+                            "degree": {"type": "string"},
+                            "institution_name": {"type": "string"},
+                            "linkedin_url": {"type": "string"},
+                            "from_date": {"type": "string"},
+                            "to_date": {"type": "string"},
+                            "duration": {"type": "string"},
+                            "location": {"type": "string"},
+                            "description": {"type": "string"}
+                        },
+                        "required": [
+                            "degree",
+                            "institution_name",
+                            "linkedin_url",
+                            "from_date",
+                            "to_date",
+                            "duration",
+                            "location",
+                            "description"
+                        ],
+                        "additionalProperties": False
+                    }
                 },
+
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "category": {"type": "string"},
+                            "items": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            }
+                        },
+                        "required": ["category", "items"],
+                        "additionalProperties": False
+                    }
+                },
+
+                "projects": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "project_name": {"type": "string"},
+                            "role": {"type": "string"},
+                            "from_date": {"type": "string"},
+                            "to_date": {"type": "string"},
+                            "duration": {"type": "string"},
+                            "technologies": {
+                                "type": "array",
+                                "items": {"type": "string"}
+                            },
+                            "description": {"type": "string"},
+                            "url": {"type": "string"}
+                        },
+                        "required": [
+                            "project_name",
+                            "role",
+                            "from_date",
+                            "to_date",
+                            "duration",
+                            "technologies",
+                            "description",
+                            "url"
+                        ],
+                        "additionalProperties": False
+                    }
+                },
+
                 "interests": {
                     "type": "array",
                     "items": {"type": "string"}
                 },
+
                 "accomplishments": {
                     "type": "array",
                     "items": {"type": "string"}
                 },
+
                 "contacts": {
                     "type": "array",
                     "items": {"type": "string"}
                 }
             },
-            "required": ["linkedin_url", "name", "location", "about", "open_to_work", "experiences", "educations", "interests", "accomplishments", "contacts"],
+
+            "required": [
+                "linkedin_url",
+                "name",
+                "location",
+                "about",
+                "open_to_work",
+                "experiences",
+                "educations",
+                "skills",
+                "projects",
+                "interests",
+                "accomplishments",
+                "contacts"
+            ],
+
             "additionalProperties": False
         }
     }
+
 
     try:
         # Make the API call

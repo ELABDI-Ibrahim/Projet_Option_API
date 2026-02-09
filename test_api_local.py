@@ -9,9 +9,9 @@ import os
 import time
 
 # Base URL - Railway URL deployment
-# BASE_URL = os.environ.get('API_URL', 'https://web-production-f19a8.up.railway.app/')
-# For local testing, use localhost
-BASE_URL = os.environ.get('API_URL', 'http://localhost:5000')
+BASE_URL = os.environ.get('API_URL', 'https://web-production-f19a8.up.railway.app/')
+# # For local testing, use localhost
+# BASE_URL = os.environ.get('API_URL', 'http://localhost:5000')
 
 
 def test_health():
