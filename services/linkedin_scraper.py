@@ -106,20 +106,23 @@ async def scrape_linkedin_profile(profile_url: str, name: str = None) -> dict:
             print(f"Found local profile for {search_name}")
             return local_data
 
-    # 2. If not found locally, scrape it
-    async with BrowserManager(headless=True, slow_mo=1000, args=["--no-sandbox"]) as browser:
-        callback = ConsoleCallback()
+    # # 2. If not found locally, scrape it
+    # async with BrowserManager(headless=True, slow_mo=1000, args=["--no-sandbox"]) as browser:
+    #     callback = ConsoleCallback()
         
-        # Load authenticated session
-        await browser.load_session("session.json")
+    #     # Load authenticated session
+    #     await browser.load_session("session.json")
         
-        # Create scraper
-        scraper = PersonScraper(browser.page, callback=callback)
+    #     # Create scraper
+    #     scraper = PersonScraper(browser.page, callback=callback)
         
-        # Scrape profile
-        person = await scraper.scrape(profile_url)
+    #     # Scrape profile
+    #     person = await scraper.scrape(profile_url)
         
-        # Convert Pydantic model to dictionary
-        profile_data = person.model_dump(mode="json")
+    #     # Convert Pydantic model to dictionary
+    #     profile_data = person.model_dump(mode="json")
         
-        return profile_data
+    #     return profile_data
+
+    print("Profile not found locally")
+    return None
