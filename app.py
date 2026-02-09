@@ -300,6 +300,7 @@ def scrape_linkedin():
             }), 400
         
         profile_url = data.get('profile_url')
+        name = data.get('name')
         
         # Check if session.json exists
         if not os.path.exists('session.json'):
@@ -311,7 +312,7 @@ def scrape_linkedin():
         # Run async function in sync context
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        profile_data = loop.run_until_complete(scrape_linkedin_profile(profile_url))
+        profile_data = loop.run_until_complete(scrape_linkedin_profile(profile_url, name))
         loop.close()
         
         if profile_data:
@@ -424,9 +425,12 @@ def verify():
                     'error': 'LinkedIn session not configured'
                 }), 503
             
+            # Extract name from resume data to help with local search
+            candidate_name = resume_data.get('name') if resume_data else None
+            
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            linkedin_data = loop.run_until_complete(scrape_linkedin_profile(linkedin_url))
+            linkedin_data = loop.run_until_complete(scrape_linkedin_profile(linkedin_url, candidate_name))
             loop.close()
             
             if not linkedin_data:

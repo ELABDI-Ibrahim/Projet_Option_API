@@ -137,9 +137,33 @@ def parse_resume_with_groq(resume_text_content):
             model="openai/gpt-oss-20b",
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are an expert at parsing resumes. Extract the information into the provided JSON schema. If a field cannot be found in the resume, return an appropriate default value (e.g., empty string for strings, null for nullable fields, empty array for arrays). Do not include any explanations outside the JSON object."
-                },
+                "role": "system",
+                "content": (
+                    "You are a resume extraction and translation engine.\n\n"
+                    "CRITICAL RULES:\n"
+                    "1. DO NOT summarize, paraphrase, rewrite, or infer.\n"
+                    "2. Extract text EXACTLY as it appears in the resume.\n"
+                    "3. If translation is required, translate literally while preserving meaning.\n"
+                    "4. NEVER translate:\n"
+                    "   - Technical terms\n"
+                    "   - Programming languages\n"
+                    "   - Frameworks, libraries, tools\n"
+                    "   - Certifications\n"
+                    "   - Company names\n"
+                    "   - Product names\n"
+                    "   - Job titles (unless clearly non-technical and commonly translated)\n"
+                    "5. Preserve bullet points, punctuation, casing, and wording as faithfully as possible.\n"
+                    "6. Descriptions must be verbatim copies of resume sections, not summaries.\n"
+                    "7. If a field is missing, return a default value:\n"
+                    "   - empty string for strings\n"
+                    "   - null for nullable fields\n"
+                    "   - empty array for arrays\n"
+                    "8. Output ONLY valid JSON that strictly follows the provided schema.\n"
+                    "9. Do NOT add explanations, comments, or extra fields.\n\n"
+                    "Your task is STRUCTURAL MAPPING, not interpretation."
+                )
+                }
+                ,
                 {
                     "role": "user",
                     "content": f"Please parse the following resume text:\n\n{resume_text_content}"

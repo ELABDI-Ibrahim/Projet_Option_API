@@ -1,0 +1,78 @@
+{
+  "linkedin_url": "https://www.linkedin.com/in/ayoub-bourhaim/",
+  "name": "Ayoub Bourhaim",
+  "location": "Nice, Provence-Alpes-Côte d'Azur, France",
+  "about": null,
+  "open_to_work": false,
+  "experiences": [
+    {
+      "position_title": "AI Developer",
+      "institution_name": "Schneider Electric · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/2329/",
+      "from_date": "Mar 2025",
+      "to_date": "Sep 2025",
+      "duration": "7 mos",
+      "location": "Carros, Provence-Alpes-Côte d'Azur, France · On-site",
+      "description": null
+    },
+    {
+      "position_title": "AMI Intelligent Metering Systems Deployment Intern",
+      "institution_name": "ONEE - Branche Electricité · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/80759808/",
+      "from_date": "Apr 2024",
+      "to_date": "Jul 2024",
+      "duration": "4 mos",
+      "location": "Casablanca, Casablanca-Settat, Morocco",
+      "description": "Skills: EnergyIP · Siemens · Python (langage de programmation) · Azure DevOps Server · SAP ERP · Anomaly detection · fraud detect · machine learning · Deep learning\nSkills: EnergyIP · Siemens · Python (langage de programmation) · Azure DevOps Server · SAP ERP · Anomaly detection · fraud detect · machine learning · Deep learning"
+    },
+    {
+      "position_title": "Professional Project - Diagnosis and prognosis of bearing faults in high-speed trains",
+      "institution_name": "SIANA - Société Marocaine de Maintenance des Rames à Grande Vitesse · Self-employed",
+      "linkedin_url": "https://www.linkedin.com/company/36151025/",
+      "from_date": "Sep 2023",
+      "to_date": "Jan 2024",
+      "duration": "5 mos",
+      "location": "Casablanca, Casablanca-Settat, Maroc · Remote",
+      "description": "- Conducted data processing tasks using SQL, including the development of SQL queries to calculate various statistical features.\n- Applied clustering algorithms like K-means to label initially unlabelled data.\n- Utilized multiple classification algorithms, including KNN, SVM, Artificial Neural Networks, and Autoencoders, for classifying types of rolling defects. Evaluated the models using the Scikit-learn and Keras libraries.\n- Conducted data processing tasks using SQL, including the development of SQL queries to calculate various statistical features. - Applied clustering algorithms like K-means to label initially unlabelled data. - Utilized multiple classification algorithms, including KNN, SVM, Artificial Neural Networks, and Autoencoders, for classifying types of rolling defects. Evaluated the models using the Scikit-learn and Keras libraries.\nSkills: Python (langage de programmation) · data analyses · machine learning · Deep learning · PyTorch · TensorFlow · Deep Neural Networks (DNN) · SVM · Autoencoders · SQL · data science · LaTeX · Scikit-learn\nSkills: Python (langage de programmation) · data analyses · machine learning · Deep learning · PyTorch · TensorFlow · Deep Neural Networks (DNN) · SVM · Autoencoders · SQL · data science · LaTeX · Scikit-learn"
+    },
+    {
+      "position_title": "Internship in Chemistry and Electrical Equipment Analysis",
+      "institution_name": "OCP Group",
+      "linkedin_url": "https://www.linkedin.com/company/165281/",
+      "from_date": "Jul 2023",
+      "to_date": "Aug 2023",
+      "duration": "2 mos",
+      "location": "El Jadida, Casablanca-Settat, Morocco",
+      "description": "Skills: Travail d’équipe · Automates programmables industriels en langage Ladder · Secteur énergétique · LaTeX\nSkills: Travail d’équipe · Automates programmables industriels en langage Ladder · Secteur énergétique · LaTeX"
+    }
+  ],
+  "educations": [
+    {
+      "institution_name": "Centrale Méditerranée",
+      "degree": "Intelligence artificielle",
+      "linkedin_url": "https://www.linkedin.com/company/15103795/",
+      "from_date": "Sep 2024",
+      "to_date": "Sep 2025",
+      "description": "Post-Graduate Program in AI and Data Science\nPost-Graduate Program in AI and Data Science"
+    },
+    {
+      "institution_name": "Ecole Centrale Casablanca",
+      "degree": "Diplôme d'ingénieur",
+      "linkedin_url": "https://www.linkedin.com/company/3747130/",
+      "from_date": "2022",
+      "to_date": "Aug 2024",
+      "description": "1st and 2nd semester: Machine Learning and Linear Models, Data Processing, Probability and Statistics, Signal Processing and Automation, Project Management\n1st and 2nd semester: Machine Learning and Linear Models, Data Processing, Probability and Statistics, Signal Processing and Automation, Project Management\nSkills: Python (langage de programmation) · R · Travail d’équipe · Modélisation mathématique · Maintenance préventive · Développement web · Gestion de projet\nSkills: Python (langage de programmation) · R · Travail d’équipe · Modélisation mathématique · Maintenance préventive · Développement web · Gestion de projet\nPhilippe Dufourcq Directeur des Programmes de l'Ecole Centrale Casablanca\nPhilippe Dufourcq Directeur des Programmes de l'Ecole Centrale Casablanca"
+    },
+    {
+      "institution_name": "CPGE - Classes préparatoires aux grandes écoles",
+      "degree": null,
+      "linkedin_url": "https://www.linkedin.com/company/34681533/",
+      "from_date": "Sep 2020",
+      "to_date": "Apr 2022",
+      "description": "Two years of preparation for the entrance exams to engineering schools, multi-disciplinary training with a focus on mathematics and computer science.\nTwo years of preparation for the entrance exams to engineering schools, multi-disciplinary training with a focus on mathematics and computer science.\nSkills: Python (langage de programmation) · Travail d’équipe · Mathématiques · SQL · Science de l'ingénieur · Physique\nSkills: Python (langage de programmation) · Travail d’équipe · Mathématiques · SQL · Science de l'ingénieur · Physique"
+    }
+  ],
+  "interests": [],
+  "accomplishments": [],
+  "contacts": []
+}

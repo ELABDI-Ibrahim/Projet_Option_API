@@ -1,0 +1,60 @@
+{
+  "linkedin_url": "https://www.linkedin.com/in/laila-ait-bihi-112836251/",
+  "name": "Laila Ait Bihi",
+  "location": "Gif-sur-Yvette, Île-de-France, France",
+  "about": null,
+  "open_to_work": false,
+  "experiences": [
+    {
+      "position_title": "Chef de projet automatisation et transformation digitale",
+      "institution_name": "Carrefour",
+      "linkedin_url": "https://www.linkedin.com/company/3046/",
+      "from_date": null,
+      "to_date": null,
+      "duration": null,
+      "location": "",
+      "description": "Jan 2025 - Aug 2025 · 8 mos\nJan 2025 to Aug 2025 · 8 mos"
+    },
+    {
+      "position_title": "Data Analyst",
+      "institution_name": "Carrefour",
+      "linkedin_url": "https://www.linkedin.com/company/3046/",
+      "from_date": null,
+      "to_date": null,
+      "duration": null,
+      "location": "",
+      "description": "Jul 2024 - Dec 2024 · 6 mos\nJul 2024 to Dec 2024 · 6 mos"
+    },
+    {
+      "position_title": "Logistics Flow Diagnostic & Optimization intern",
+      "institution_name": "Groupe ONCF · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/18665892/",
+      "from_date": "Jun 2023",
+      "to_date": "Aug 2023",
+      "duration": "3 mos",
+      "location": "Marrakesh, Marrakesh-Safi, Morocco · On-site",
+      "description": "Skills: Data Analysis\nSkills: Data Analysis"
+    }
+  ],
+  "educations": [
+    {
+      "institution_name": "Ecole Centrale Casablanca",
+      "degree": "Bac+5, ENGINEERING",
+      "linkedin_url": "https://www.linkedin.com/company/3747130/",
+      "from_date": "2022",
+      "to_date": "2022",
+      "description": "Skills: Data Analysis · Supply Chain Management · Data Science\nSkills: Data Analysis · Supply Chain Management · Data Science"
+    },
+    {
+      "institution_name": "CentraleSupélec",
+      "degree": "Engineer's degree, Mathematics",
+      "linkedin_url": "https://www.linkedin.com/company/14803/",
+      "from_date": "Feb 2024",
+      "to_date": "Jun 2024",
+      "description": "Grade: Exchange semester in 2nd year\nGrade: Exchange semester in 2nd year\nSkills: Data Analysis · Digital Transformation\nSkills: Data Analysis · Digital Transformation"
+    }
+  ],
+  "interests": [],
+  "accomplishments": [],
+  "contacts": []
+}

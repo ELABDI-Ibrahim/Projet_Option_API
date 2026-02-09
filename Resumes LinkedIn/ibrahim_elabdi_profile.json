@@ -1,0 +1,98 @@
+{
+  "linkedin_url": "https://www.linkedin.com/in/ibrahim-ea-942a7122a/",
+  "name": "Ibrahim EA",
+  "location": "Greater Metz Area",
+  "about": "Intern",
+  "open_to_work": false,
+  "experiences": [
+    {
+      "position_title": "Data & Digitalization (ATS with AI Capabilities)",
+      "institution_name": "Forvis Mazars Group",
+      "linkedin_url": "https://www.linkedin.com/company/103549020/",
+      "from_date": "Oct 2025",
+      "to_date": "Present",
+      "duration": "4 mos",
+      "location": "France · Hybrid",
+      "description": "• Contributed to the development of an Applicant Tracking System (ATS) centralizing and standardizing all incoming applications, regardless of source or format.\n• Helped design a global and fully exploitable candidate database (CV-thèque) enabling large-scale recruitment analytics and automated data processing.\n• Integrated AI-based CV parsing and classification to extract key skills, experience, and education from unstructured documents.\n• Developed a machine-learning matching module to rank candidates according to job requirements by using vector similarity (embeddings) and supervised scoring models.\nTechnologies: Python, NLP embeddings, ML ranking models, data pipelines, CV parsing, workflow automation, recruitment analytics, ATS architecture\n• Contributed to the development of an Applicant Tracking System (ATS) centralizing and standardizing all incoming applications, regardless of source or format. • Helped design a global and fully exploitable candidate database (CV-thèque) enabling large-scale recruitment analytics and automated data processing. • Integrated AI-based CV parsing and classification to extract key skills, experience, and education from unstructured documents. • Developed a machine-learning matching module to rank candidates according to job requirements by using vector similarity (embeddings) and supervised scoring models. Technologies: Python, NLP embeddings, ML ranking models, data pipelines, CV parsing, workflow automation, recruitment analytics, ATS architecture\nSkills: Data Intelligence · Python (Programming Language) · Data Science · Data Analysis · Large Language Models (LLM)\nSkills: Data Intelligence · Python (Programming Language) · Data Science · Data Analysis · Large Language Models (LLM)"
+    },
+    {
+      "position_title": "Data Scientist & Operations Research Intern",
+      "institution_name": "Groupe Crédit Agricole · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/7467/",
+      "from_date": "Jan 2025",
+      "to_date": "Jun 2025",
+      "duration": "6 mos",
+      "location": "Montrouge, Île-de-France, France · Hybrid",
+      "description": "• Collaborated with business teams to translate financial needs into data-driven optimization solutions.\n• Developed and deployed a collateral optimization model combining linear programming and heuristics.\n• Built ETL pipelines (Python, SQL) for ingestion and preparation of financial datasets.\n• Reduced optimization runtime by a factor of 10 through algorithmic redesign and data-structure optimization.\n• Performed statistical analyses and predictive modeling on credit data to extract decision-making patterns.\nTechnologies: Python (Numpy, Numba, Pandas), SAS, C#, Dask (PySpark), DuckDB, HTML, CSS, JavaScript\n• Collaborated with business teams to translate financial needs into data-driven optimization solutions. • Developed and deployed a collateral optimization model combining linear programming and heuristics. • Built ETL pipelines (Python, SQL) for ingestion and preparation of financial datasets. • Reduced optimization runtime by a factor of 10 through algorithmic redesign and data-structure optimization. • Performed statistical analyses and predictive modeling on credit data to extract decision-making patterns. Technologies: Python (Numpy, Numba, Pandas), SAS, C#, Dask (PySpark), DuckDB, HTML, CSS, JavaScript\nSkills: Data Intelligence · SQL · JavaScript · Python (Programming Language) · DSI\nSkills: Data Intelligence · SQL · JavaScript · Python (Programming Language) · DSI"
+    },
+    {
+      "position_title": "Data Analyste Intern",
+      "institution_name": "Societe Generale · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/1691/",
+      "from_date": "Jul 2024",
+      "to_date": "Dec 2024",
+      "duration": "6 mos",
+      "location": "Courbevoie, Île-de-France, France · Hybrid",
+      "description": "• Conducted exploratory analysis and modeling on automotive datasets (Remarketing, Maintenance, Residual Values) and financial risk data.\n• Developed interactive Power BI dashboards and automated reporting via Python and VBA, improving audit speed and reporting clarity.\n• Designed a signature-verification model based on AI to strengthen document control processes.\n• Improved analysis accessibility for auditors through data-strategy initiatives.\nTechnologies: Python (Plotly, Dash, Pytorch, Polars, Scikit-learn), SQL, Excel, VBA\n• Conducted exploratory analysis and modeling on automotive datasets (Remarketing, Maintenance, Residual Values) and financial risk data. • Developed interactive Power BI dashboards and automated reporting via Python and VBA, improving audit speed and reporting clarity. • Designed a signature-verification model based on AI to strengthen document control processes. • Improved analysis accessibility for auditors through data-strategy initiatives. Technologies: Python (Plotly, Dash, Pytorch, Polars, Scikit-learn), SQL, Excel, VBA"
+    },
+    {
+      "position_title": "Modélisation et implémentation d'un système de placement dans l’avion",
+      "institution_name": "Air France",
+      "linkedin_url": "https://www.linkedin.com/company/4242/",
+      "from_date": "Feb 2024",
+      "to_date": "Apr 2024",
+      "duration": "3 mos",
+      "location": "Paris, Île-de-France, France",
+      "description": "- Formulation of mathematical models for the optimization of passenger placement, considering multiple constraints (aircraft balancing, grouped placement of passengers traveling together, and taking into account passengers with reduced mobility).\n- Evaluation of the performance of the passenger placement system using metrics such as boarding time, satisfaction rate of each type of passenger, and overall customer satisfaction.\n- Resolution of the mathematical problem using Gurobi and other optimization algorithms.\n- Formulation of mathematical models for the optimization of passenger placement, considering multiple constraints (aircraft balancing, grouped placement of passengers traveling together, and taking into account passengers with reduced mobility). - Evaluation of the performance of the passenger placement system using metrics such as boarding time, satisfaction rate of each type of passenger, and overall customer satisfaction. - Resolution of the mathematical problem using Gurobi and other optimization algorithms.\nSkills: Programming Languages · Simulated Annealing · Team Management · Programming · Statistics · Optimization · Statistical Data Analysis · Metaheuristics · Python (Programming Language) · Genetic Algorithms · Mathematical Modeling · Gurobi\nSkills: Programming Languages · Simulated Annealing · Team Management · Programming · Statistics · Optimization · Statistical Data Analysis · Metaheuristics · Python (Programming Language) · Genetic Algorithms · Mathematical Modeling · Gurobi"
+    },
+    {
+      "position_title": "Diagnosis and prognosis of bearing faults in high-speed trains",
+      "institution_name": "SIANA - Société Marocaine de Maintenance des Rames à Grande Vitesse",
+      "linkedin_url": "https://www.linkedin.com/company/36151025/",
+      "from_date": "Sep 2023",
+      "to_date": "Jan 2024",
+      "duration": "5 mos",
+      "location": "Casablanca-Settat, Morocco · Remote",
+      "description": "- Data processing using SQL including the creation of SQL queries to calculate several statistical features.\n- Using clustering algorithms such as K-means to label data initially unlabelled.\n- Using several classification algorithms, such as KNN, SVM, Artificial Neural Networks, and Autoencoders, to classify types of rolling defects after evaluations using the Scikit and Keras libraries.\n- Data processing using SQL including the creation of SQL queries to calculate several statistical features. - Using clustering algorithms such as K-means to label data initially unlabelled. - Using several classification algorithms, such as KNN, SVM, Artificial Neural Networks, and Autoencoders, to classify types of rolling defects after evaluations using the Scikit and Keras libraries.\nSkills: Programming Languages · Data Analysis · Machine Learning · Programming · PyTorch · Deep Neural Networks (DNN) · SQL · PostgreSQL · Scikit-Learn · Microsoft Power BI · Data Science\nSkills: Programming Languages · Data Analysis · Machine Learning · Programming · PyTorch · Deep Neural Networks (DNN) · SQL · PostgreSQL · Scikit-Learn · Microsoft Power BI · Data Science"
+    },
+    {
+      "position_title": "Collection and visualisation of IoT sensor data at the port of Tangier Med",
+      "institution_name": "Tanger Med (Official Account) - TMSA · Internship",
+      "linkedin_url": "https://www.linkedin.com/company/10488687/",
+      "from_date": "Jun 2023",
+      "to_date": "Aug 2023",
+      "duration": "3 mos",
+      "location": "Hybrid",
+      "description": "- Implementation of an MQTT protocol to connect sensors and insert the collected data in real-time into an SQL database.\n- Integration of all sensors into the OpenRemote platform, enabling visualization and decision-making.\n- Implementation of an MQTT protocol to connect sensors and insert the collected data in real-time into an SQL database. - Integration of all sensors into the OpenRemote platform, enabling visualization and decision-making.\nSkills: Programming Languages · MySQL · Programming · Mqtt · SQL · Internet of Things (IoT) · Arduino · OpenRemote · Python (Programming Language)\nSkills: Programming Languages · MySQL · Programming · Mqtt · SQL · Internet of Things (IoT) · Arduino · OpenRemote · Python (Programming Language)"
+    }
+  ],
+  "educations": [
+    {
+      "institution_name": "CentraleSupélec",
+      "degree": "Master of Engineering - MEng, Artificial Intelligence \\ Data Science",
+      "linkedin_url": "https://www.linkedin.com/company/14803/",
+      "from_date": "Nov 2023",
+      "to_date": "Nov 2023",
+      "description": "Optimisation and Operations Research, Data Science and Artificial Intelligence, Cloud computing and distributed computing,Advanced mathematics ,Project Management.\nOptimisation and Operations Research, Data Science and Artificial Intelligence, Cloud computing and distributed computing,Advanced mathematics ,Project Management.\nSkills: Programming · Programming Languages\nSkills: Programming · Programming Languages"
+    },
+    {
+      "institution_name": "Ecole Centrale Casablanca",
+      "degree": "Master of Engineering - MEng",
+      "linkedin_url": "https://www.linkedin.com/company/3747130/",
+      "from_date": "Sep 2022",
+      "to_date": "Sep 2022",
+      "description": "Machine Learning and Linear Models, Data Processing, Probability and Statistics, Signal Processing and Automation, Project Management\nMachine Learning and Linear Models, Data Processing, Probability and Statistics, Signal Processing and Automation, Project Management\nSkills: Programming · Programming Languages\nSkills: Programming · Programming Languages"
+    },
+    {
+      "institution_name": "CPGE - Classes préparatoires aux grandes écoles",
+      "degree": "Engineering, Engineering",
+      "linkedin_url": "https://www.linkedin.com/company/34681533/",
+      "from_date": "Aug 2020",
+      "to_date": "Jun 2022",
+      "description": "Two years of preparation for the entrance exams to engineering schools, multi-disciplinary training with a focus on mathematics and computer science.\nRanked in the top 5% of candidates in the Concours National Commun (CNC), the most competitive entrance exam for engineering schools in Morroco.\nTwo years of preparation for the entrance exams to engineering schools, multi-disciplinary training with a focus on mathematics and computer science. Ranked in the top 5% of candidates in the Concours National Commun (CNC), the most competitive entrance exam for engineering schools in Morroco.\nSkills: Programming · Programming Languages\nSkills: Programming · Programming Languages"
+    }
+  ],
+  "interests": [],
+  "accomplishments": [],
+  "contacts": []
+}
