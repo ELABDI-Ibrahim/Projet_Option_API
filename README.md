@@ -47,21 +47,26 @@ Content-Type: application/json
 # Response: Array of results
 ```
 
-### 5. Scrape LinkedIn
+### 5. Scrape LinkedIn (Enhanced)
+Now supports local caching. If a `name` is provided, it checks for an existing profile JSON locally before scraping.
+
 ```bash
 POST /api/scrape-linkedin
 Content-Type: application/json
 
 # Body:
 {
-  "profile_url": "https://linkedin.com/in/username"
+  "profile_url": "https://linkedin.com/in/username",
+  "name": "John Doe"        # <--- NEW: Optional. Triggers local cache lookup.
 }
 
 # Response: Full profile data
-# ⚠️ Requires session.json
+# ⚠️ Requires session.json (unless found locally)
 ```
 
 ### 6. Verify Resume
+Automatically utilizes local cache if available.
+
 ```bash
 POST /api/verify
 
@@ -75,3 +80,10 @@ Body: {"resume_data": {...}, "linkedin_data": {...}}
 
 # Response: Verification report with confidence score
 ```
+
+## 🚀 Local Caching
+
+The system now prioritizes local data to improve speed and stability.
+-   **Storage**: Checks `Resumes LinkedIn/` directory.
+-   **Matching**: Uses fuzzy matching (exact name or name parts) to find the correct JSON file.
+-   **Behavior**: If a matching file is found, it is returned immediately, bypassing the browser scraper.
