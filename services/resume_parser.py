@@ -8,18 +8,29 @@ from PyPDF2 import PdfReader
 # --------------------------------------------------
 # 1. PDF → CLEAN TEXT (LOW TOKEN, SAFE)
 # --------------------------------------------------
+# services/resume_parser.py
+
+import os
+import json
+import re
+from groq import Groq
+from PyPDF2 import PdfReader
+
+# --------------------------------------------------
+# 1. PDF → CLEAN TEXT (LOW TOKEN, SAFE)
+# --------------------------------------------------
 def pdf_to_text_minimal_tokens(pdf_path):
     text = ""
-
     try:
         reader = PdfReader(pdf_path)
         for page in reader.pages:
             page_text = page.extract_text() or ""
+            # Filter non-printable characters and extra spaces
             page_text = ''.join(c for c in page_text if c.isprintable())
             page_text = re.sub(r'\s+', ' ', page_text).strip()
             text += page_text + "\n"
 
-        # remove duplicated lines (basic header/footer cleanup)
+        # Remove duplicated lines (basic header/footer cleanup)
         seen = set()
         clean_lines = []
         for line in text.split("\n"):
@@ -33,9 +44,8 @@ def pdf_to_text_minimal_tokens(pdf_path):
         print(f"PDF error: {e}")
         return None
 
-
 # --------------------------------------------------
-# 2. GROQ RESUME PARSER (STRICT BUT SAFE)
+# 2. GROQ RESUME PARSER (STRICT COMPLIANT)
 # --------------------------------------------------
 def parse_resume_with_groq(resume_text_content):
     if not resume_text_content:
@@ -69,9 +79,10 @@ def parse_resume_with_groq(resume_text_content):
                             "location": {"type": ["string", "null"]},
                             "description": {"type": ["string", "null"]}
                         },
+                        # STRICT MODE FIX: All properties must be in required
                         "required": [
-                            "position_title",
-                            "institution_name"
+                            "position_title", "institution_name", "linkedin_url",
+                            "from_date", "to_date", "duration", "location", "description"
                         ],
                         "additionalProperties": False
                     }
@@ -91,9 +102,10 @@ def parse_resume_with_groq(resume_text_content):
                             "location": {"type": ["string", "null"]},
                             "description": {"type": ["string", "null"]}
                         },
+                        # STRICT MODE FIX: All properties must be in required
                         "required": [
-                            "degree",
-                            "institution_name"
+                            "degree", "institution_name", "linkedin_url",
+                            "from_date", "to_date", "duration", "location", "description"
                         ],
                         "additionalProperties": False
                     }
@@ -132,7 +144,11 @@ def parse_resume_with_groq(resume_text_content):
                             "description": {"type": ["string", "null"]},
                             "url": {"type": ["string", "null"]}
                         },
-                        "required": ["project_name"],
+                        # STRICT MODE FIX: All properties must be in required
+                        "required": [
+                            "project_name", "role", "from_date", "to_date", 
+                            "duration", "technologies", "description", "url"
+                        ],
                         "additionalProperties": False
                     }
                 },
@@ -152,41 +168,28 @@ def parse_resume_with_groq(resume_text_content):
                     "items": {"type": "string"}
                 }
             },
-
+            # STRICT MODE FIX: All root properties must be in required
             "required": [
-                "linkedin_url",
-                "name",
-                "location",
-                "about",
-                "open_to_work",
-                "experiences",
-                "educations",
-                "skills",
-                "projects",
-                "interests",
-                "accomplishments",
-                "contacts"
+                "linkedin_url", "name", "location", "about", "open_to_work",
+                "experiences", "educations", "skills", "projects",
+                "interests", "accomplishments", "contacts"
             ],
-
             "additionalProperties": False
         }
     }
 
     try:
+        # Note: 'openai/gpt-oss-120b' might be deprecated or invalid on Groq.
+        # Switched to a reliable standard model. Change back if your specific endpoint requires it.
         completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="openai/gpt-oss-120b", 
             messages=[
                 {
                     "role": "system",
                     "content": (
-                        "You are a resume extraction engine.\n\n"
-                        "RULES:\n"
-                        "1. Extract text EXACTLY as written.\n"
-                        "2. Do NOT infer or summarize.\n"
-                        "3. If a value is missing, use null or empty array.\n"
-                        "4. Do NOT translate technical terms, tools, job titles, or company names.\n"
-                        "5. Output ONLY valid JSON matching the schema.\n"
-                        "6. Structural mapping only."
+                        "You are a resume extraction engine.\n"
+                        "Extract text EXACTLY as written. Do NOT infer or summarize.\n"
+                        "If a value is missing, return null."
                     )
                 },
                 {
