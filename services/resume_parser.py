@@ -190,6 +190,7 @@ def parse_resume_with_groq(resume_text_content):
                         "You are a resume extraction engine.\n"
                         "Extract text EXACTLY as written. Do NOT infer or summarize.\n"
                         "If a value is missing, return null."
+                        "Put \n when you want to start a new line one sentence is finished"
                     )
                 },
                 {
