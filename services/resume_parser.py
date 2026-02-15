@@ -321,9 +321,10 @@ def parse_resume_with_groq(resume_text_content):
             "role": "system",
             "content": (
                 "You are a resume extraction engine.\n"
-                "Extract text EXACTLY as written. Do NOT infer or summarize.\n"
-                "If a value is missing, return null.\n"
-                "Put \n when you want to start a new line once sentence is finished."
+                "1. Extract text EXACTLY as written. Do NOT infer or summarize.\n"
+                "2. If a value is missing, return null.\n"
+                "3. FORMATTING RULE: Do strictly NOT use HTML tags (like <br>, <ul>, <li>). \n"
+                "4. Use the standard newline character (\\n) to separate bullet points or distinct sentences.\n"
             )
         },
         {

@@ -4,7 +4,7 @@ import os
 import time
 
 # Base URL - Localhost
-BASE_URL = os.environ.get('API_URL', 'http://127.0.0.1:5000')
+# BASE_URL = os.environ.get('API_URL', 'http://127.0.0.1:5000')
 
 BASE_URL = 'https://web-production-f19a8.up.railway.app/'
 
