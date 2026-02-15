@@ -3,6 +3,9 @@ import json
 import re
 from groq import Groq
 from PyPDF2 import PdfReader
+import os
+import json
+from groq import Groq, BadRequestError
 
 
 # --------------------------------------------------
@@ -12,40 +15,193 @@ from PyPDF2 import PdfReader
 
 import os
 import json
-import re
+import base64
+import requests
+import fitz  # PyMuPDF
 from groq import Groq
-from PyPDF2 import PdfReader
+
+# from dotenv import load_dotenv
+
+# # Load environment variables
+# load_dotenv()
 
 # --------------------------------------------------
-# 1. PDF → CLEAN TEXT (LOW TOKEN, SAFE)
+# CONFIGURATION
 # --------------------------------------------------
-def pdf_to_text_minimal_tokens(pdf_path):
-    text = ""
+NVIDIA_API_KEY = os.environ.get("NVIDIA_API_KEY")
+INVOKE_URL = "https://ai.api.nvidia.com/v1/cv/baidu/paddleocr"
+
+# --------------------------------------------------
+# 1. PDF/IMAGE → TEXT (NVIDIA OCR)
+# --------------------------------------------------
+
+def get_headers():
+    return {
+        "Authorization": f"Bearer {NVIDIA_API_KEY}",
+        "Accept": "application/json"
+    }
+
+def ocr_image(image_bytes, ext):
+    """Send image bytes to NVIDIA PaddleOCR and return JSON."""
     try:
-        reader = PdfReader(pdf_path)
-        for page in reader.pages:
-            page_text = page.extract_text() or ""
-            # Filter non-printable characters and extra spaces
-            page_text = ''.join(c for c in page_text if c.isprintable())
-            page_text = re.sub(r'\s+', ' ', page_text).strip()
-            text += page_text + "\n"
+        image_b64 = base64.b64encode(image_bytes).decode()
+        # Handle extension for data URI
+        ext_str = ext[1:] if ext.startswith('.') else ext
+        
+        payload = {
+            "input": [
+                {
+                    "type": "image_url",
+                    "url": f"data:image/{ext_str};base64,{image_b64}"
+                }
+            ]
+        }
 
-        # Remove duplicated lines (basic header/footer cleanup)
-        seen = set()
-        clean_lines = []
-        for line in text.split("\n"):
-            if line and line not in seen:
-                clean_lines.append(line)
-                seen.add(line)
+        print(f"Image sent to NVIDIA PaddleOCR API")
 
-        return "\n".join(clean_lines).strip()
+        response = requests.post(INVOKE_URL, headers=get_headers(), json=payload)
+
+        if response.status_code == 200:
+            print(f"response received")
+            return response.json()
+        else:
+            return {"error": f"API Error {response.status_code}", "body": response.text}
 
     except Exception as e:
-        print(f"PDF error: {e}")
-        return None
+        return {"error": str(e)}
+
+def extract_text_from_ocr_result(ocr_result):
+    """Extract only text lines from NVIDIA PaddleOCR result."""
+    text_lines = []
+
+    if "data" in ocr_result:
+        for page in ocr_result["data"]:
+            # New key used by the API
+            if "text_detections" in page:
+                for det in page["text_detections"]:
+                    # "text_prediction" contains the recognized text
+                    if "text_prediction" in det:
+                        txt = det["text_prediction"].get("text", "").strip()
+                        if txt:
+                            text_lines.append(txt)
+
+            # ALSO support older versions (fallback)
+            elif "items" in page:
+                for item in page["items"]:
+                    if "text_prediction" in item:
+                        txt = item["text_prediction"].get("text", "").strip()
+                        if txt:
+                            text_lines.append(txt)
+
+    return "\n".join(text_lines)
+
+
+def process_pdf(file_path):
+    """Extract text from PDF; OCR pages with no text."""
+    results = []
+    try:
+        doc = fitz.open(file_path)
+
+        for page_num, page in enumerate(doc):
+            print(f"--- Processing Page {page_num + 1} ---")
+
+            # Extract selectable text
+            text = page.get_text()
+            
+            if len(text.strip()) > 1000:
+                print("Found text directly in PDF.")
+                results.append({
+                    "page": page_num + 1,
+                    "type": "text_extraction",
+                    "content": text
+                })
+            else:
+                print("No text found (or < 1000 chars) — performing OCR.")
+                
+                # --- FIX START ---
+                # 2.0 = 2x zoom (approx 144 dpi). 
+                # 3.0 = 3x zoom (approx 216 dpi). Recommended for Resume OCR.
+                zoom_x = 3.0  
+                zoom_y = 3.0
+                mat = fitz.Matrix(zoom_x, zoom_y)
+                
+                # Pass the matrix to get_pixmap
+                pix = page.get_pixmap(matrix=mat)
+                # --- FIX END ---
+
+                image_bytes = pix.tobytes("png")
+                
+                # Optional: Check size to ensure you don't hit NVIDIA API limits (e.g., 5MB or 10MB)
+                print(f"Image size: {len(image_bytes) / 1024 / 1024:.2f} MB")
+                
+                ocr_result = ocr_image(image_bytes, "png")
+
+                results.append({
+                    "page": page_num + 1,
+                    "type": "ocr",
+                    "content": ocr_result
+                })
+
+        return results
+    except Exception as e:
+        print(f"Error processing PDF: {e}")
+        return []
+
+def process_image(file_path, ext):
+    """Process a single image file with OCR."""
+    try:
+        with open(file_path, "rb") as f:
+            image_bytes = f.read()
+            print("Image read successfully.")
+        return ocr_image(image_bytes, ext)
+    except Exception as e:
+        return {"error": str(e)}
+
+def process_file(file_path):
+    """Route file to PDF or image handler."""
+    if not os.path.exists(file_path):
+        return {"error": "File not found"}
+
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == ".pdf":
+        result = process_pdf(file_path)
+        return format_ocr_output(result)
+    elif ext in [".jpg", ".jpeg", ".png", ".bmp"]:
+        result = process_image(file_path, ext)
+        return format_ocr_output(result)
+    else:
+        return {"error": "Unsupported file type"}
+
+def format_ocr_output(result):
+    """Format OCR results into plain text only."""
+    output_text = ""
+
+    # PDF result
+    if isinstance(result, list):
+        for entry in result:
+            output_text += f"\n--- Page {entry.get('page')} ---\n"
+
+            if entry.get("type") == "text_extraction":
+                output_text += entry.get("content", "").strip() + "\n"
+            elif entry.get("type") == "ocr":
+                output_text += extract_text_from_ocr_result(entry.get("content", {})) + "\n"
+
+    # Single image result
+    elif isinstance(result, dict):
+        if "error" in result:
+            output_text = f"Error: {result['error']}"
+        else:
+            output_text = extract_text_from_ocr_result(result)
+
+    return output_text.strip()
+
+# Wrapper to maintain compatibility
+def pdf_to_text_minimal_tokens(pdf_path):
+    return process_file(pdf_path)
 
 # --------------------------------------------------
-# 2. GROQ RESUME PARSER (STRICT COMPLIANT)
+# 2. GROQ RESUME PARSER WITH AUTO-RETRY
 # --------------------------------------------------
 def parse_resume_with_groq(resume_text_content):
     if not resume_text_content:
@@ -53,6 +209,7 @@ def parse_resume_with_groq(resume_text_content):
 
     client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
+    # Define the schema (Same as your original)
     json_schema = {
         "name": "resume_extraction_schema",
         "strict": True,
@@ -64,7 +221,6 @@ def parse_resume_with_groq(resume_text_content):
                 "location": {"type": ["string", "null"]},
                 "about": {"type": ["string", "null"]},
                 "open_to_work": {"type": ["boolean", "null"]},
-
                 "experiences": {
                     "type": "array",
                     "items": {
@@ -79,7 +235,6 @@ def parse_resume_with_groq(resume_text_content):
                             "location": {"type": ["string", "null"]},
                             "description": {"type": ["string", "null"]}
                         },
-                        # STRICT MODE FIX: All properties must be in required
                         "required": [
                             "position_title", "institution_name", "linkedin_url",
                             "from_date", "to_date", "duration", "location", "description"
@@ -87,7 +242,6 @@ def parse_resume_with_groq(resume_text_content):
                         "additionalProperties": False
                     }
                 },
-
                 "educations": {
                     "type": "array",
                     "items": {
@@ -102,7 +256,6 @@ def parse_resume_with_groq(resume_text_content):
                             "location": {"type": ["string", "null"]},
                             "description": {"type": ["string", "null"]}
                         },
-                        # STRICT MODE FIX: All properties must be in required
                         "required": [
                             "degree", "institution_name", "linkedin_url",
                             "from_date", "to_date", "duration", "location", "description"
@@ -110,7 +263,6 @@ def parse_resume_with_groq(resume_text_content):
                         "additionalProperties": False
                     }
                 },
-
                 "skills": {
                     "type": "array",
                     "items": {
@@ -126,7 +278,6 @@ def parse_resume_with_groq(resume_text_content):
                         "additionalProperties": False
                     }
                 },
-
                 "projects": {
                     "type": "array",
                     "items": {
@@ -144,7 +295,6 @@ def parse_resume_with_groq(resume_text_content):
                             "description": {"type": ["string", "null"]},
                             "url": {"type": ["string", "null"]}
                         },
-                        # STRICT MODE FIX: All properties must be in required
                         "required": [
                             "project_name", "role", "from_date", "to_date", 
                             "duration", "technologies", "description", "url"
@@ -152,23 +302,10 @@ def parse_resume_with_groq(resume_text_content):
                         "additionalProperties": False
                     }
                 },
-
-                "interests": {
-                    "type": "array",
-                    "items": {"type": "string"}
-                },
-
-                "accomplishments": {
-                    "type": "array",
-                    "items": {"type": "string"}
-                },
-
-                "contacts": {
-                    "type": "array",
-                    "items": {"type": "string"}
-                }
+                "interests": {"type": "array", "items": {"type": "string"}},
+                "accomplishments": {"type": "array", "items": {"type": "string"}},
+                "contacts": {"type": "array", "items": {"type": "string"}}
             },
-            # STRICT MODE FIX: All root properties must be in required
             "required": [
                 "linkedin_url", "name", "location", "about", "open_to_work",
                 "experiences", "educations", "skills", "projects",
@@ -178,34 +315,77 @@ def parse_resume_with_groq(resume_text_content):
         }
     }
 
-    try:
-        # Note: 'openai/gpt-oss-120b' might be deprecated or invalid on Groq.
-        # Switched to a reliable standard model. Change back if your specific endpoint requires it.
-        completion = client.chat.completions.create(
-            model="openai/gpt-oss-120b", 
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a resume extraction engine.\n"
-                        "Extract text EXACTLY as written. Do NOT infer or summarize.\n"
-                        "If a value is missing, return null."
-                        "Put \n when you want to start a new line one sentence is finished"
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": f"Parse this resume:\n\n{resume_text_content}"
+    # Initialize messages
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a resume extraction engine.\n"
+                "Extract text EXACTLY as written. Do NOT infer or summarize.\n"
+                "If a value is missing, return null.\n"
+                "Put \n when you want to start a new line once sentence is finished."
+            )
+        },
+        {
+            "role": "user",
+            "content": f"Parse this resume:\n\n{resume_text_content}"
+        }
+    ]
+
+    max_retries = 3
+    attempt = 0
+
+    while attempt < max_retries:
+        try:
+            print(f"--- Groq Parsing Attempt {attempt + 1} ---")
+            
+            completion = client.chat.completions.create(
+                model="openai/gpt-oss-120b",
+                messages=messages,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": json_schema
                 }
-            ],
-            response_format={
-                "type": "json_schema",
-                "json_schema": json_schema
-            }
-        )
+            )
+            
+            # If successful, return the parsed JSON
+            return json.loads(completion.choices[0].message.content)
 
-        return json.loads(completion.choices[0].message.content)
+        except BadRequestError as e:
+            # Handle 400 Errors (Schema Validation Failed)
+            error_data = e.body.get("error", {})
+            code = error_data.get("code")
+            
+            if code == "json_validate_failed":
+                failed_json = error_data.get("failed_generation", "")
+                error_msg = error_data.get("message", "Unknown validation error")
+                
+                print(f"Validation failed: {error_msg}")
+                
+                # Append the error details to messages to give the LLM context
+                # It acts like a conversation: User -> Assistant (Failed) -> User (Correction Request)
+                
+                # Note: We cannot append the 'failed' assistant message directly 
+                # because it wasn't valid, so we tell the user what happened.
+                messages.append({
+                    "role": "user", 
+                    "content": (
+                        f"The JSON you generated failed validation.\n"
+                        f"Error: {error_msg}\n"
+                        f"Failed JSON: {failed_json}\n\n"
+                        "Please regenerate the JSON, correcting the missing fields (like 'to_date') "
+                        "ensure strict adherence to the schema."
+                    )
+                })
+                attempt += 1
+            else:
+                # If it's a different 400 error, raise it immediately
+                print(f"Critical API Error: {str(e)}")
+                raise e
 
-    except Exception as e:
-        print("Groq parsing error:", str(e))
-        raise
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            raise e
+
+    print("Max retries exceeded.")
+    return None

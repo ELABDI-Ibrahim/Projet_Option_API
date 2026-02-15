@@ -61,24 +61,55 @@ Content-Type: application/json
 }
 
 # Response: Full profile data
+# Response: Full profile data
 # ⚠️ Requires session.json (unless found locally)
 ```
 
-### 6. Verify Resume
-Automatically utilizes local cache if available.
+### 6. Enrich Resume
+Merges resume data with LinkedIn data.
 
 ```bash
-POST /api/verify
-
-# Method A: File Upload
-Content-Type: multipart/form-data
-Body: file=resume.pdf, linkedin_url=...
-
-# Method B: JSON
+POST /api/enrich-resume
 Content-Type: application/json
-Body: {"resume_data": {...}, "linkedin_data": {...}}
 
-# Response: Verification report with confidence score
+# Body:
+{
+  "resume_data": { ...parsed resume json... },
+  "linkedin_url": "https://linkedin.com/in/username", # optional
+  "name": "John Doe" # optional
+}
+
+# Response: Merged profile data with [Linkedin] tags
+```
+
+### 6. Upload Resume
+Uploads a resume PDF, parses it using AI, uploads it to storage, and creates database records.
+
+```bash
+POST /api/upload-resume
+Content-Type: multipart/form-data
+
+# Request Body (form-data):
+# - file: (File) The resume PDF file. [Required]
+# - job_offer_id: (String/UUID) ID of the job offer to apply for. [Optional]
+
+# Response (JSON):
+{
+  "success": true,
+  "message": "Resume uploaded and application created",
+  "data": {
+    "candidate_id": "uuid-string",
+    "resume_id": "uuid-string",
+    "application_id": "uuid-string" or null,
+    "file_url": "https://[project-ref].supabase.co/storage/v1/object/public/Resumes_lake/resumes/[timestamp]_[filename].pdf",
+    "parsed_data": {
+      "name": "Candidate Name",
+      "email": "candidate@email.com",
+      "skills": ["Python", "SQL", ...],
+      ...
+    }
+  }
+}
 ```
 
 ## 🚀 Local Caching

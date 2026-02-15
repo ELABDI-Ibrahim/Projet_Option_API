@@ -5,6 +5,7 @@ Main Flask application for scraping LinkedIn profiles, parsing resumes, and veri
 
 import os
 import asyncio
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -13,11 +14,11 @@ from werkzeug.utils import secure_filename
 from services.linkedin_scraper import scrape_linkedin_profile
 from services.resume_parser import pdf_to_text_minimal_tokens, parse_resume_with_groq
 from services.linkedin_finder import find_linkedin, find_linkedin_bulk
-from services.verification import run_verification
+from services.enrichment import enrich_candidate
 
-# # from dotenv import load_dotenv
-# # Only for local
-# # Load environment variables
+# from dotenv import load_dotenv
+# # # Only for local
+# # # Load environment variables
 # load_dotenv()
 
 # Initialize Flask app
@@ -27,7 +28,7 @@ CORS(app)
 # Configuration
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
-ALLOWED_EXTENSIONS = {'pdf'}
+ALLOWED_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png', 'bmp']
 
 # Ensure upload directory exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -64,7 +65,8 @@ def index():
             'POST /api/find-linkedin': 'Find LinkedIn profile by name/company',
             'POST /api/find-linkedin-bulk': 'Find LinkedIn profiles for multiple people',
             'POST /api/scrape-linkedin': 'Scrape LinkedIn profile data',
-            'POST /api/verify': 'Verify resume against LinkedIn profile'
+            'POST /api/verify': 'Verify resume against LinkedIn profile',
+            'POST /api/enrich-resume': 'Enrich resume data with LinkedIn data'
         },
         'documentation': 'See README.md for detailed usage'
     }), 200
@@ -140,6 +142,105 @@ def parse_resume():
             'data': structured_resume
         }), 200
     
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f'Internal server error: {str(e)}'
+        }), 500
+
+
+@app.route('/api/upload-resume', methods=['POST'])
+def upload_resume():
+    """
+    Upload resume, parse it, and store in DB/Storage.
+    
+    Expects multipart/form-data:
+        - file: PDF file
+        - job_offer_id: UUID (optional)
+        
+    Returns:
+        JSON with resume data and DB IDs.
+    """
+    try:
+        # Check if file was uploaded
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        job_offer_id = request.form.get('job_offer_id')
+        
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+        
+        if not allowed_file(file.filename):
+            return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+            
+        # 1. Save locally for parsing
+        filename = secure_filename(file.filename)
+        # Add timestamp to ensure uniqueness
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
+        unique_filename = f"{timestamp}_{filename}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(filepath)
+        
+        # 2. Parse Resume
+        resume_text = pdf_to_text_minimal_tokens(filepath)
+        if not resume_text:
+            os.remove(filepath)
+            return jsonify({'success': False, 'error': 'Failed to extract text'}), 500
+            
+        parsed_data = parse_resume_with_groq(resume_text)
+        if not parsed_data:
+            os.remove(filepath)
+            return jsonify({'success': False, 'error': 'Failed to parse resume'}), 500
+            
+        # 3. Upload to Supabase Storage
+        # Read file bytes
+        with open(filepath, "rb") as f:
+            file_bytes = f.read()
+            
+        try:
+            from services.db import upload_resume_file, create_candidate, create_resume, create_application, add_attachment
+            
+            public_url = upload_resume_file(file_bytes, unique_filename)
+            
+            # 4. Create DB Records
+            # 4a. Candidate
+            candidate_id = create_candidate(parsed_data)
+            
+            # 4b. Resume matched to candidate
+            resume_id = create_resume(candidate_id, parsed_data, public_url)
+            
+            # 4d. Application (if job_offer_id present)
+            application_id = None
+            if job_offer_id:
+                application_id = create_application(candidate_id, resume_id, job_offer_id)
+                message = "Resume uploaded and application created"
+            else:
+                message = "Resume uploaded and stored"
+                
+            # Clean up local file
+            os.remove(filepath)
+            
+            return jsonify({
+                'success': True,
+                'message': message,
+                'data': {
+                    'candidate_id': candidate_id,
+                    'resume_id': resume_id,
+                    'application_id': application_id,
+                    'file_url': public_url,
+                    'parsed_data': parsed_data
+                }
+            }), 201
+            
+        except Exception as db_err:
+            # If DB fails, we should probably still clean up local file
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            print(f"DB/Storage Error: {db_err}")
+            return jsonify({'success': False, 'error': f"Storage error: {str(db_err)}"}), 500
+
     except Exception as e:
         return jsonify({
             'success': False,
@@ -335,117 +436,55 @@ def scrape_linkedin():
 
 
 # =============================================================================
-# VERIFICATION
+# RESUME ENRICHMENT
 # =============================================================================
 
-@app.route('/api/verify', methods=['POST'])
-def verify():
+@app.route('/api/enrich-resume', methods=['POST'])
+def enrich_resume_endpoint():
     """
-    Verify resume against LinkedIn profile.
+    Enrich resume data with LinkedIn data.
     
-    Method 1 - JSON with pre-parsed data:
+    Expects JSON:
         {
-            "resume_data": {...parsed resume...},
-            "linkedin_data": {...scraped LinkedIn...}
+            "resume_data": {...},
+            "linkedin_url": "https://linkedin.com/in/username" (optional),
+            "name": "John Doe" (optional, useful if linkedin_service uses it for local lookup)
         }
-    
-    Method 2 - File upload with LinkedIn URL:
-        - PDF file with key 'file'
-        - 'linkedin_url' in form data
     
     Returns:
         {
             "success": true,
-            "data": {
-                "verification_summary": "...",
-                "discrepancies": [...],
-                "overall_confidence": 0.85,
-                "statistics": {...}
-            }
+            "data": {...merged_profile...}
         }
     """
     try:
-        # Check if this is a JSON request or multipart
-        if request.is_json:
-            # Method 1: JSON with pre-parsed data
-            data = request.get_json()
-            
-            if not data or 'resume_data' not in data or 'linkedin_data' not in data:
-                return jsonify({
-                    'success': False,
-                    'error': 'Both resume_data and linkedin_data are required'
-                }), 400
-            
-            resume_data = data.get('resume_data')
-            linkedin_data = data.get('linkedin_data')
+        data = request.get_json()
         
-        else:
-            # Method 2: File upload + LinkedIn URL
-            if 'file' not in request.files:
-                return jsonify({
-                    'success': False,
-                    'error': 'No file provided. Use key "file" in form-data'
-                }), 400
-            
-            if 'linkedin_url' not in request.form:
-                return jsonify({
-                    'success': False,
-                    'error': 'No linkedin_url provided in form data'
-                }), 400
-            
-            # Parse resume
-            file = request.files['file']
-            
-            if not allowed_file(file.filename):
-                return jsonify({
-                    'success': False,
-                    'error': 'Invalid file type. Only PDF allowed.'
-                }), 400
-            
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            
-            resume_text = pdf_to_text_minimal_tokens(filepath)
-            resume_data = parse_resume_with_groq(resume_text)
-            os.remove(filepath)
-            
-            if not resume_data:
-                return jsonify({
-                    'success': False,
-                    'error': 'Failed to parse resume'
-                }), 500
-            
-            # Scrape LinkedIn
-            linkedin_url = request.form.get('linkedin_url')
-            
-            if not os.path.exists('session.json'):
-                return jsonify({
-                    'success': False,
-                    'error': 'LinkedIn session not configured'
-                }), 503
-            
-            # Extract name from resume data to help with local search
-            candidate_name = resume_data.get('name') if resume_data else None
-            
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            linkedin_data = loop.run_until_complete(scrape_linkedin_profile(linkedin_url, candidate_name))
+        if not data or 'resume_data' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'resume_data is required'
+            }), 400
+        
+        resume_data = data.get('resume_data')
+        linkedin_url = data.get('linkedin_url')
+        name = data.get('name') or resume_data.get('name')
+        
+        # Run async function in sync context
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
+        try:
+            merged_data = loop.run_until_complete(
+                enrich_candidate(resume_data, linkedin_url, name)
+            )
+        finally:
             loop.close()
-            
-            if not linkedin_data:
-                return jsonify({
-                    'success': False,
-                    'error': 'Failed to scrape LinkedIn profile'
-                }), 500
-        
-        # Run verification
-        verification_result = run_verification(resume_data, linkedin_data)
         
         return jsonify({
             'success': True,
-            'message': 'Verification completed',
-            'data': verification_result
+            'message': 'Resume enriched successfully',
+            'data': merged_data
         }), 200
     
     except Exception as e:

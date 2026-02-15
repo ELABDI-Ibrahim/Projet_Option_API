@@ -1,0 +1,135 @@
+{
+  "data": {
+    "about": "\u00c9tudiant en ing\u00e9nierie \u2013 \u00c0 la recherche d\u2019un stage de fin d\u2019\u00e9tudes de 6 mois en 2026",
+    "accomplishments": [],
+    "contacts": [
+      "ibrahim.elabdi@student-cs .fr",
+      "+33 7 56 84 77 48"
+    ],
+    "educations": [
+      {
+        "degree": "Programme d\u2019ing\u00e9nierie",
+        "description": "Sp\u00e9cialisations : intelligence artificielle g\u00e9n\u00e9rative, apprentissage automatique, LLM et syst\u00e8mes RAG, structuration de bases de connaissances, d\u00e9veloppement d\u2019agents IA",
+        "duration": "2022 \u2013 2026",
+        "from_date": "2022",
+        "institution_name": "\u00c9cole Centrale Casablanca",
+        "linkedin_url": null,
+        "location": null,
+        "to_date": "2026"
+      },
+      {
+        "degree": "Programme d\u2019ing\u00e9nierie - 2\u00e8me ann\u00e9e",
+        "description": "Sp\u00e9cialisations : optimisation, recherche op\u00e9rationnelle, IA, strat\u00e9gie d\u2019entreprise, cloud computing",
+        "duration": "2023 \u2013 2025",
+        "from_date": "2023",
+        "institution_name": "CentraleSup\u00e9lec",
+        "linkedin_url": null,
+        "location": null,
+        "to_date": "2025"
+      },
+      {
+        "degree": "Classes pr\u00e9paratoires (MPSI - MP)",
+        "description": "Pr\u00e9paration aux concours des grandes \u00e9coles d\u2019ing\u00e9nieurs, avec un accent sur les math\u00e9matiques et l\u2019informatique",
+        "duration": "2020 \u2013 2022",
+        "from_date": "2020",
+        "institution_name": "Lyc\u00e9e Omar Ibn El Khattab",
+        "linkedin_url": null,
+        "location": null,
+        "to_date": "2022"
+      }
+    ],
+    "experiences": [
+      {
+        "description": "Collaboration avec les \u00e9quipes m\u00e9tiers pour traduire les besoins financiers en solutions d\u2019optimisation fond\u00e9es sur les donn\u00e9es. D\u00e9veloppement et d\u00e9ploiement d\u2019un mod\u00e8le d\u2019optimisation des collat\u00e9raux combinant programmation lin\u00e9aire et heuristiques. Cr\u00e9ation de pipelines ETL (Python, SQL) pour l\u2019ingestion et la pr\u00e9paration de donn\u00e9es financi\u00e8res. R\u00e9duction des temps d\u2019optimisation par un facteur 10 gr\u00e2ce \u00e0 une refonte algorithmique et une optimisation des structures de donn\u00e9es. Analyses statistiques et mod\u00e9lisation pr\u00e9dictive sur des donn\u00e9es de cr\u00e9dit pour extraire des patterns d\u00e9cisionnels. Technologies utilis\u00e9es : Python (Numpy, Numba, Pandas), SAS, C#, Dask ( PySpark), DuckDB, HTML, CSS, Javascript",
+        "duration": "01/2025 \u2013 06/2025",
+        "from_date": "01/2025",
+        "institution_name": "Cr\u00e9dit Agricole SA",
+        "linkedin_url": null,
+        "location": null,
+        "position_title": "Stagiaire Data Scientist et Recherche Operationnelle (6 mois)",
+        "to_date": "06/2025"
+      },
+      {
+        "description": "Analyse exploratoire et mod\u00e9lisation sur des donn\u00e9es automobiles (Remarketing, Maintenance, Valeurs r\u00e9siduelles) et des donn\u00e9es de risque financier. D\u00e9veloppement de tableaux de bord interactifs Power BI et automatisation de rapports via Python et VBA am\u00e9liorant la vitesse des audits et la lisibilit\u00e9 des reportings. D\u00e9veloppement d\u2019un mod\u00e8le de v\u00e9rification de signature bas\u00e9 sur un mod\u00e9le d\u2019IA pour renforcer les contr\u00f4les documentaires. Am\u00e9lioration de l\u2019accessibilit\u00e9 des analyses pour les auditeurs via des initiatives de strat\u00e9gie de donn\u00e9es. Technologies utilis\u00e9es : Python (Plotly, Dash, Pytorch, Polars,Scikit-learn), SQL, Excel, VBA,",
+        "duration": "07/2024 \u2013 12/2024",
+        "from_date": "07/2024",
+        "institution_name": "Soci\u00e9t\u00e9 G\u00e9n\u00e9rale",
+        "linkedin_url": null,
+        "location": null,
+        "position_title": "Stagiaire Data Analyst en Inspection G\u00e9n\u00e9rale et Audit (6 mois)",
+        "to_date": "12/2024"
+      },
+      {
+        "description": "Impl\u00e9mentation du protocole MQTT pour la collecte et la centralisation des donn\u00e9es de capteurs en temps r\u00e9el. Int\u00e9gration de flux de donn\u00e9es live dans OpenRemote pour la visualisation et la d\u00e9tection d\u2019anomalies. Technologies utilis\u00e9es : Python, IOT (Protocole MQTT), Arduino",
+        "duration": "06/2023 \u2013 08/2023",
+        "from_date": "06/2023",
+        "institution_name": "Tanger Med Special Agency",
+        "linkedin_url": null,
+        "location": null,
+        "position_title": "Stage en collecte et analyse de donn\u00e9es de capteurs IoT (2 mois)",
+        "to_date": "08/2023"
+      }
+    ],
+    "interests": [],
+    "linkedin_url": null,
+    "location": "Metz, France",
+    "name": "Ibrahim EL ABDI",
+    "open_to_work": true,
+    "projects": [],
+    "skills": [
+      {
+        "category": "Programmation & Data Engineering",
+        "items": [
+          "Python",
+          "Java",
+          "C#",
+          "SQL",
+          "PySpark",
+          "Amazon Cloud Services (AWS)",
+          "Docker",
+          "Git",
+          "GitHub",
+          "REST APIs"
+        ]
+      },
+      {
+        "category": "Visualisation & Business Intelligence",
+        "items": [
+          "Power BI",
+          "Excel (VBA)",
+          "PowerQuery",
+          "DAX"
+        ]
+      },
+      {
+        "category": "Intelligence Artificielle & Machine Learning",
+        "items": [
+          "PyTorch",
+          "Scikit-learn",
+          "LangChain",
+          "Pandas",
+          "N8N",
+          "D\u00e9ploiement de mod\u00e8les"
+        ]
+      },
+      {
+        "category": "Gestion de projet",
+        "items": [
+          "M\u00e9thodologie Agile",
+          "Certification Scrum Master"
+        ]
+      },
+      {
+        "category": "Comp\u00e9tences transversales",
+        "items": [
+          "Esprit analytique",
+          "autonomie",
+          "rigueur",
+          "proactivit\u00e9"
+        ]
+      }
+    ]
+  },
+  "message": "Resume parsed successfully",
+  "success": true
+}

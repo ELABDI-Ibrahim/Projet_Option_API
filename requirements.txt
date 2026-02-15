@@ -8,7 +8,11 @@ duckduckgo-search
 fuzzywuzzy
 python-Levenshtein
 playwright
-scikit-learn
 linkedin-scraper
-playwright
 ddgs
+scikit-learn
+spacy
+numpy
+supabase
+PyMuPDF
+langdetect

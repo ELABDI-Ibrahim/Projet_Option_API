@@ -154,7 +154,7 @@ import json
 def run_local_test():
     # Configuration
     API_URL = "http://127.0.0.1:5000/api/parse-resume"
-    PDF_FILE = "test_resume.pdf"
+    PDF_FILE = "Test_resumes\EL_ABDI_IBRAHIM_CV.pdf"
     APP_FILE = "app.py"
 
     # 1. Check if files exist
@@ -206,7 +206,7 @@ def run_local_test():
                     print("-" * 50)
                     
                     # Optional: Save to file to inspect full result
-                    with open("parse_result.json", "w", encoding="utf-8") as out:
+                    with open("parse_result_ibrahim.json", "w", encoding="utf-8") as out:
                         json.dump(data, out, indent=2)
                     print("💾 Full result saved to 'parse_result.json'")
                 else:
