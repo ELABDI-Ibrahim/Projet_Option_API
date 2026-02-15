@@ -465,9 +465,11 @@ def enrich_resume_endpoint():
         }
     """
     try:
+        print("\n=== Enrichment Endpoint Called ===")
         data = request.get_json()
         
         if not data or 'resume_data' not in data:
+            print("Error: 'resume_data' missing from request body")
             return jsonify({
                 'success': False,
                 'error': 'resume_data is required'
@@ -476,6 +478,9 @@ def enrich_resume_endpoint():
         resume_data = data.get('resume_data')
         linkedin_url = data.get('linkedin_url')
         name = data.get('name') or resume_data.get('name')
+        
+        print(f"Processing enrichment for: '{name}'")
+        print(f"LinkedIn URL: {linkedin_url}")
         
         # Run async function in sync context
         loop = asyncio.new_event_loop()
@@ -488,6 +493,7 @@ def enrich_resume_endpoint():
         finally:
             loop.close()
         
+        print("Enrichment successful. Sending response.")
         return jsonify({
             'success': True,
             'message': 'Resume enriched successfully',
@@ -495,6 +501,9 @@ def enrich_resume_endpoint():
         }), 200
     
     except Exception as e:
+        print(f"!!! Enrichment Error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': f'Internal server error: {str(e)}'

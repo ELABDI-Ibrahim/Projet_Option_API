@@ -130,21 +130,22 @@ class DescriptionMergerNLP:
         cand_text = candidate_span.text.strip()
         cand_clean = self._clean_string(cand_text)
         
-        # 1. Exact Match
+        # 1. & 2. Iterator for String checks (Exact & Fuzzy)
         for existing_text in existing_sentences_text:
-            if cand_clean == self._clean_string(existing_text):
+            exist_clean = self._clean_string(existing_text)
+            
+            # 1. Exact Match
+            if cand_clean == exist_clean:
                 # print(f"[Exact Match] '{cand_text}' == '{existing_text}'")
                 return True
 
-        # 2. Fuzzy String Match (Fast & Catch typos/minor diffs)
-            # This catches "Developed API" vs "Developed the API" (Score ~0.95)
-            # significantly faster than Spacy vectors.
+            # 2. Fuzzy String Match
             text_similarity = SequenceMatcher(None, cand_clean, exist_clean).ratio()
-            if text_similarity > 0.85:  # 90% character overlap
+            if text_similarity > 0.85:
                 # print(f"   [Fuzzy Match: {text_similarity:.2f}] '{cand_text}' ~= '{existing_text}'")
                 return True
 
-        # 2. Vector Similarity
+        # 3. Vector Similarity
         nlp = self.nlp_en
         if nlp:
             doc1 = nlp(cand_text)
@@ -176,6 +177,8 @@ class DescriptionMergerNLP:
 
         res_spans = self._get_unique_sentences(final_res_text)
         li_spans = self._get_unique_sentences(final_li_text)
+        
+        print(f"   [Merge Text] Resume sentences: {len(res_spans)}, LinkedIn sentences: {len(li_spans)}")
 
         final_sentences_text = []
 
@@ -356,4 +359,5 @@ async def enrich_candidate(resume_data: dict, linkedin_url: str = None, name: st
     merger = ProfileMerger(resume_data, linkedin_data)
     merged_data = merger.process()
     
+    print(f"Enrichment complete for {name}")
     return merged_data
