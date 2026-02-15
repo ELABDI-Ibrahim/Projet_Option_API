@@ -1,4 +1,4 @@
-## 📍 Endpoints
+## Endpoints
 
 ### 1. Health Check
 ```bash
@@ -111,10 +111,3 @@ Content-Type: multipart/form-data
   }
 }
 ```
-
-## 🚀 Local Caching
-
-The system now prioritizes local data to improve speed and stability.
--   **Storage**: Checks `Resumes LinkedIn/` directory.
--   **Matching**: Uses fuzzy matching (exact name or name parts) to find the correct JSON file.
--   **Behavior**: If a matching file is found, it is returned immediately, bypassing the browser scraper.
