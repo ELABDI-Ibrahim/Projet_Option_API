@@ -164,15 +164,18 @@ def upload_resume():
     try:
         # Check if file was uploaded
         if 'file' not in request.files:
+            print("No file provided")
             return jsonify({'success': False, 'error': 'No file provided'}), 400
         
         file = request.files['file']
         job_offer_id = request.form.get('job_offer_id')
         
         if file.filename == '':
+            print("No file selected")
             return jsonify({'success': False, 'error': 'No file selected'}), 400
         
         if not allowed_file(file.filename):
+            print("Invalid file type")
             return jsonify({'success': False, 'error': 'Invalid file type'}), 400
             
         # 1. Save locally for parsing
@@ -186,11 +189,13 @@ def upload_resume():
         # 2. Parse Resume
         resume_text = pdf_to_text_minimal_tokens(filepath)
         if not resume_text:
+            print("Failed to extract text")
             os.remove(filepath)
             return jsonify({'success': False, 'error': 'Failed to extract text'}), 500
             
         parsed_data = parse_resume_with_groq(resume_text)
         if not parsed_data:
+            print("Failed to parse resume")
             os.remove(filepath)
             return jsonify({'success': False, 'error': 'Failed to parse resume'}), 500
             
@@ -203,11 +208,11 @@ def upload_resume():
             from services.db import upload_resume_file, create_candidate, create_resume, create_application, add_attachment
             
             public_url = upload_resume_file(file_bytes, unique_filename)
-            
+            print("File uploaded to storage")
             # 4. Create DB Records
             # 4a. Candidate
             candidate_id = create_candidate(parsed_data)
-            
+            print("Candidate created")
             # 4b. Resume matched to candidate
             resume_id = create_resume(candidate_id, parsed_data, public_url)
             
