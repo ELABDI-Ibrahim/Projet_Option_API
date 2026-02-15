@@ -141,7 +141,7 @@ class DescriptionMergerNLP:
 
             # 2. Fuzzy String Match
             text_similarity = SequenceMatcher(None, cand_clean, exist_clean).ratio()
-            if text_similarity > 0.85:
+            if text_similarity > 0.80:
                 # print(f"   [Fuzzy Match: {text_similarity:.2f}] '{cand_text}' ~= '{existing_text}'")
                 return True
 
