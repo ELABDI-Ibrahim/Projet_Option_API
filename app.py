@@ -162,6 +162,8 @@ def upload_resume():
         JSON with resume data and DB IDs.
     """
     try:
+        print("Upload request received")
+        print(f"Posted request {request}")
         # Check if file was uploaded
         if 'file' not in request.files:
             print("No file provided")
