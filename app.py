@@ -152,107 +152,171 @@ def parse_resume():
 @app.route('/api/upload-resume', methods=['POST'])
 def upload_resume():
     """
-    Upload resume, parse it, and store in DB/Storage.
-    
-    Expects multipart/form-data:
-        - file: PDF file
-        - job_offer_id: UUID (optional)
-        
-    Returns:
-        JSON with resume data and DB IDs.
+    Upload resume(s), parse, and store in DB/Storage.
+    Supports single PDF/Image or ZIP file containing multiple resumes.
     """
     try:
         print("Upload request received")
-        print(f"Posted request {request}")
-        # Check if file was uploaded
         if 'file' not in request.files:
-            print("No file provided")
             return jsonify({'success': False, 'error': 'No file provided'}), 400
         
         file = request.files['file']
         job_offer_id = request.form.get('job_offer_id')
         
         if file.filename == '':
-            print("No file selected")
             return jsonify({'success': False, 'error': 'No file selected'}), 400
         
-        if not allowed_file(file.filename):
-            print("Invalid file type")
-            return jsonify({'success': False, 'error': 'Invalid file type'}), 400
-            
-        # 1. Save locally for parsing
-        filename = secure_filename(file.filename)
-        # Add timestamp to ensure uniqueness
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
-        unique_filename = f"{timestamp}_{filename}"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        file.save(filepath)
+        # Check file extension
+        ext = file.filename.rsplit('.', 1)[1].lower() if '.' in file.filename else ''
         
-        # 2. Parse Resume
-        resume_text = pdf_to_text_minimal_tokens(filepath)
-        if not resume_text:
-            print("Failed to extract text")
-            os.remove(filepath)
-            return jsonify({'success': False, 'error': 'Failed to extract text'}), 500
+        # 1. Handle ZIP File
+        if ext == 'zip':
+            import zipfile
+            results = []
+            errors = []
             
-        parsed_data = parse_resume_with_groq(resume_text)
-        if not parsed_data:
-            print("Failed to parse resume")
-            os.remove(filepath)
-            return jsonify({'success': False, 'error': 'Failed to parse resume'}), 500
+            # Save ZIP temporarily
+            zip_filename = secure_filename(file.filename)
+            zip_path = os.path.join(app.config['UPLOAD_FOLDER'], zip_filename)
+            file.save(zip_path)
             
-        # 3. Upload to Supabase Storage
-        # Read file bytes
-        with open(filepath, "rb") as f:
-            file_bytes = f.read()
-            
-        try:
-            from services.db import upload_resume_file, create_candidate, create_resume, create_application, add_attachment
-            
-            public_url = upload_resume_file(file_bytes, unique_filename)
-            print("File uploaded to storage")
-            # 4. Create DB Records
-            # 4a. Candidate
-            candidate_id = create_candidate(parsed_data)
-            print("Candidate created")
-            # 4b. Resume matched to candidate
-            resume_id = create_resume(candidate_id, parsed_data, public_url)
-            
-            # 4d. Application (if job_offer_id present)
-            application_id = None
-            if job_offer_id:
-                application_id = create_application(candidate_id, resume_id, job_offer_id)
-                message = "Resume uploaded and application created"
-            else:
-                message = "Resume uploaded and stored"
-                
-            # Clean up local file
-            os.remove(filepath)
+            try:
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    # Extract all to a temp dir
+                    extract_dir = os.path.join(app.config['UPLOAD_FOLDER'], f"extract_{datetime.now().strftime('%Y%m%d%H%M%S')}")
+                    os.makedirs(extract_dir, exist_ok=True)
+                    zip_ref.extractall(extract_dir)
+                    
+                    # Loop through files
+                    for root, dirs, files in os.walk(extract_dir):
+                        for filename in files:
+                            # Skip hidden files or system files if needed
+                            if filename.startswith('__MACOSX') or filename.startswith('.'):
+                                continue
+                                
+                            file_ext = filename.rsplit('.', 1)[1].lower() if '.' in filename else ''
+                            if file_ext not in ALLOWED_EXTENSIONS:
+                                errors.append({'filename': filename, 'error': 'Invalid file type'})
+                                continue
+                                
+                            filepath = os.path.join(root, filename)
+                            
+                            # Process file
+                            try:
+                                result = process_single_resume(filepath, filename, job_offer_id)
+                                results.append(result)
+                            except Exception as e:
+                                print(f"Error processing {filename}: {e}")
+                                errors.append({'filename': filename, 'error': str(e)})
+                                
+                    # Clean up extracted files
+                    import shutil
+                    shutil.rmtree(extract_dir)
+                    
+            except Exception as e:
+                return jsonify({'success': False, 'error': f"Failed to process ZIP: {str(e)}"}), 500
+            finally:
+                if os.path.exists(zip_path):
+                    os.remove(zip_path)
             
             return jsonify({
                 'success': True,
-                'message': message,
-                'data': {
-                    'candidate_id': candidate_id,
-                    'resume_id': resume_id,
-                    'application_id': application_id,
-                    'file_url': public_url,
-                    'parsed_data': parsed_data
-                }
-            }), 201
+                'message': f"Processed {len(results)} files",
+                'data': results,
+                'errors': errors
+            }), 200
             
-        except Exception as db_err:
-            # If DB fails, we should probably still clean up local file
-            if os.path.exists(filepath):
-                os.remove(filepath)
-            print(f"DB/Storage Error: {db_err}")
-            return jsonify({'success': False, 'error': f"Storage error: {str(db_err)}"}), 500
+        # 2. Handle Single File (PDF/Image)
+        elif ext in ALLOWED_EXTENSIONS:
+            # Save locally
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            try:
+                data = process_single_resume(filepath, filename, job_offer_id)
+                
+                # Maintain original response format for single file
+                return jsonify({
+                    'success': True,
+                    'message': "Resume uploaded and stored",
+                    'data': data
+                }), 201
+            except Exception as e:
+                return jsonify({'success': False, 'error': str(e)}), 500
+            finally:
+                if os.path.exists(filepath):
+                    os.remove(filepath)
+        
+        else:
+            return jsonify({'success': False, 'error': 'Invalid file type. Allowed: PDF, JPG, PNG, BMP, ZIP'}), 400
 
     except Exception as e:
+        print(f"Internal Error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
             'error': f'Internal server error: {str(e)}'
         }), 500
+
+def process_single_resume(filepath, original_filename, job_offer_id):
+    """
+    Helper to parse a single resume file (already saved at filepath),
+    upload to storage, and create DB records.
+    Does NOT delete the file (caller handles cleanup).
+    Returns dict with candidate_id, resume_id, etc.
+    """
+    # 1. Unique ID for storage
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
+    unique_filename = f"{timestamp}_{secure_filename(original_filename)}"
+    
+    # 2. Parse Resume
+    # We use our existing parser which handles PDF and Images
+    # Note: resume_parser.process_file expects a path
+    try:
+        # Import here to avoid circular dependencies if any, or just ensure availability
+        from services.resume_parser import process_file, parse_resume_with_groq
+        
+        # Extract text
+        resume_text = process_file(filepath)
+        if not resume_text or "Error:" in resume_text[:10]: # Basic error check
+            raise Exception(f"Failed to extract text: {resume_text}")
+            
+        # Parse with AI
+        parsed_data = parse_resume_with_groq(resume_text)
+        if not parsed_data:
+            raise Exception("Failed to parse resume with AI")
+            
+        # 3. Upload to Supabase Storage
+        with open(filepath, "rb") as f:
+            file_bytes = f.read()
+            
+        from services.db import upload_resume_file, create_candidate, create_resume, create_application
+        
+        public_url = upload_resume_file(file_bytes, unique_filename)
+        print(f"File uploaded: {unique_filename}")
+        
+        # 4. Create DB Records
+        candidate_id = create_candidate(parsed_data)
+        resume_id = create_resume(candidate_id, parsed_data, public_url)
+        
+        application_id = None
+        if job_offer_id:
+            application_id = create_application(candidate_id, resume_id, job_offer_id)
+            
+        return {
+            'candidate_id': candidate_id,
+            'resume_id': resume_id,
+            'application_id': application_id,
+            'file_url': public_url,
+            'parsed_data': parsed_data,
+            'filename': original_filename
+        }
+        
+    except Exception as e:
+        print(f"Error in process_single_resume: {e}")
+        raise e
 
 
 # =============================================================================

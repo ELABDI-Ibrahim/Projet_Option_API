@@ -200,6 +200,28 @@ def format_ocr_output(result):
 def pdf_to_text_minimal_tokens(pdf_path):
     return process_file(pdf_path)
 
+def sanitize_json_output(data):
+    """
+    Recursively cleans string values in a JSON object/list:
+    1. Replaces <br> variations with \n
+    2. Removes HTML tags like <b>, <ul>, <li>
+    3. Fixes multiple newlines
+    """
+    if isinstance(data, dict):
+        return {k: sanitize_json_output(v) for k, v in data.items()}
+    elif isinstance(data, list):
+        return [sanitize_json_output(item) for item in data]
+    elif isinstance(data, str):
+        # 1. Replace <br> tags with \n
+        text = re.sub(r'<\s*br\s*/?>', '\n', data, flags=re.IGNORECASE)
+        # 2. Remove other common HTML tags (like <b>, </b>, <ul>)
+        text = re.sub(r'<[^>]+>', '', text)
+        # 3. Replace multiple newlines with a single newline (optional, depends on preference)
+        text = re.sub(r'\n\s*\n', '\n', text)
+        return text.strip()
+    else:
+        return data
+
 # --------------------------------------------------
 # 2. GROQ RESUME PARSER WITH AUTO-RETRY
 # --------------------------------------------------
@@ -316,20 +338,35 @@ def parse_resume_with_groq(resume_text_content):
     }
 
     # Initialize messages
+    # ... inside parse_resume_with_groq ...
+
     messages = [
         {
             "role": "system",
             "content": (
-                "You are a resume extraction engine.\n"
-                "1. Extract text EXACTLY as written. Do NOT infer or summarize.\n"
-                "2. If a value is missing, return null.\n"
-                "3. FORMATTING RULE: Do strictly NOT use HTML tags (like <br>, <ul>, <li>). \n"
-                "4. Use the standard newline character (\\n) to separate bullet points or distinct sentences.\n"
+                "You are an expert Resume Parsing API designed to output strict JSON data.\n"
+                "Your goal is to extract information accurately while sanitizing the formatting.\n\n"
+                
+                "### CORE INSTRUCTIONS:\n"
+                "1. **Extraction:** Extract information EXACTLY as it appears in the text. Do not summarize or hallucinate.\n"
+                "2. **Missing Data:** If a field is not present, return `null`.\n"
+                "3. **Dates:** Keep dates in their original format (e.g., 'Jan 2020', '2020-01').\n\n"
+
+                "### FORMATTING & CLEANING RULES (CRITICAL):\n"
+                "1. **Plain Text Only:** The output must be pure JSON strings. STRICTLY FORBIDDEN: HTML tags (e.g., <br>, <p>, <li>, <b>).\n"
+                "2. **Line Breaks:** You must detect where a new sentence or bullet point begins.\n"
+                "   - REPLACE all visual bullet points (•, -, *) with a standard newline character (`\\n`).\n"
+                "   - REPLACE all HTML break tags (<br>) with a standard newline character (`\\n`).\n"
+                "3. **Whitespace:** Trim excessive whitespace. Do not use double newlines (`\\n\\n`) unless there is a paragraph break.\n\n"
+
+                "### EXAMPLE EXPECTATION:\n"
+                "Input: 'Managed team.• Created app.<br>Saved money.'\n"
+                "Output: 'Managed team.\\nCreated app.\\nSaved money.'"
             )
         },
         {
             "role": "user",
-            "content": f"Parse this resume:\n\n{resume_text_content}"
+            "content": f"Parse the following resume content into the defined JSON schema:\n\n{resume_text_content}"
         }
     ]
 
@@ -349,8 +386,13 @@ def parse_resume_with_groq(resume_text_content):
                 }
             )
             
-            # If successful, return the parsed JSON
-            return json.loads(completion.choices[0].message.content)
+            # Load the raw JSON
+            raw_json = json.loads(completion.choices[0].message.content)
+            
+            # --- NEW: CLEAN THE JSON BEFORE RETURNING ---
+            clean_json = sanitize_json_output(raw_json)
+            
+            return clean_json
 
         except BadRequestError as e:
             # Handle 400 Errors (Schema Validation Failed)
