@@ -348,20 +348,23 @@ def parse_resume_with_groq(resume_text_content):
                 "Your goal is to extract information accurately while sanitizing the formatting.\n\n"
                 
                 "### CORE INSTRUCTIONS:\n"
-                "1. **Extraction:** Extract information EXACTLY as it appears in the text. Do not summarize or hallucinate.\n"
+                "1. **Extraction:** Extract information accurately. Do not summarize or hallucinate.\n"
                 "2. **Missing Data:** If a field is not present, return `null`.\n"
                 "3. **Dates:** Keep dates in their original format (e.g., 'Jan 2020', '2020-01').\n\n"
 
-                "### FORMATTING & CLEANING RULES (CRITICAL):\n"
+                "### SKILLS EXTRACTION STRATEGY (CRITICAL):\n"
+                "The schema requires an array of objects, where each object has a 'category' and a list of 'items'.\n"
+                "1. **Identify:** Scan the *entire* resume (Summary, Experience, Projects, Skills section) for technical and professional skills.\n"
+                "2. **Categorize:** You MUST group these skills into logical categories (e.g., 'Languages', 'Frameworks', 'Databases', 'Cloud', 'Soft Skills').\n"
+                "3. **Infer:** If the resume lists skills in a single comma-separated list without headers, analyze the items and create your own categories to group them logically.\n"
+                "4. **Format:** Ensure every skill is a distinct string item within its specific category list.\n\n"
+
+                "### FORMATTING & CLEANING RULES:\n"
                 "1. **Plain Text Only:** The output must be pure JSON strings. STRICTLY FORBIDDEN: HTML tags (e.g., <br>, <p>, <li>, <b>).\n"
                 "2. **Line Breaks:** You must detect where a new sentence or bullet point begins.\n"
                 "   - REPLACE all visual bullet points (•, -, *) with a standard newline character (`\\n`).\n"
                 "   - REPLACE all HTML break tags (<br>) with a standard newline character (`\\n`).\n"
-                "3. **Whitespace:** Trim excessive whitespace. Do not use double newlines (`\\n\\n`) unless there is a paragraph break.\n\n"
-
-                "### EXAMPLE EXPECTATION:\n"
-                "Input: 'Managed team.• Created app.<br>Saved money.'\n"
-                "Output: 'Managed team.\\nCreated app.\\nSaved money.'"
+                "3. **Whitespace:** Trim excessive whitespace.\n"
             )
         },
         {
